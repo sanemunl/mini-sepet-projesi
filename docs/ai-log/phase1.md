@@ -1,0 +1,3 @@
+Soru (Prompt):E-ticaret sepeti projemde ürün yaratmayı Factory Method ile nasıl ayırabilirim? Nesne tabanlı yapıya geçiş için önerin nedir?   
+AI Yanıtı (Özet):AI, Product soyut sınıfı ve alt sınıflar oluşturmamı, ardından kategorilere göre nesne dönen bir fabrika sınıfı kurmamı önerdi.  
+Uygulama Farkı:AI önerisini takip ettim ancak fabrika metodunu statik (@staticmethod) yaparak kullanım kolaylığı sağladım. Kodu kopyalamak yerine sınıfları kendi ihtiyacıma göre (Electronics, Food) isimlendirerek el ile yazdım.
