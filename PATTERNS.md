@@ -46,6 +46,7 @@ FAZ 1
     note for ProductFactory "Nesne yaratma sorumluluğu\nburada merkezileştirilmiştir."
    ```
 
+
 Faz 2:
 2. Decorator (Faz 2)
 Nerede Kullanıldı: GiftWrapDecorator ve WarrantyDecorator sınıflarında.
