@@ -25,7 +25,7 @@ Kullanılan Tasarım Örüntüleri
 |Faz 2|Adapter| Sistemimizin beklediği TL formatını, dış Banka API'sinin beklediği kuruş formatına dönüştürerek uyumluluk sağladık. |
 |Faz 3|Strategy| İndirim mantığını sepetten soyutlayarak, yeni indirim türlerinin sepet kodunu değiştirmeden eklenebilmesini (OCP) sağladık. |
 |Faz 3|Observer| Sepete ürün eklendiğinde Stok ve Pazarlama birimlerinin olay tabanlı (event-driven) olarak haberdar olmasını sağladık. |
-
+```mermaid
 classDiagram
     class Product {
         <<abstract>>
@@ -80,6 +80,7 @@ classDiagram
     Observer <|.. StockManager
     
     BankPaymentAdapter --> ExternalBankAPI : "adapts"
+```
 
 Nasıl Çalıştırılır?
 Bu projeyi yerel bilgisayarınızda çalıştırmak için aşağıdaki adımları izleyin:
