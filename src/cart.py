@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
 
-# 1. TEMEL ÜRÜN YAPISI (Faz 1'den)
+# 1. TEMEL ÜRÜN VE DECORATOR YAPISI (Faz 1 & 2)
 class Product(ABC):
     def __init__(self, name: str, price: float):
         self.name = name
-        self._price = price # Decorator'lar için korumalı hale getirdik
+        self._price = price
 
     @property
     def price(self) -> float:
@@ -22,11 +22,7 @@ class Food(Product):
     def get_details(self):
         return f"[Gıda] {self.name}"
 
-# 2. DECORATOR ÖRÜNTÜSÜ (Faz 2 - Yeni)
-# Ürünlere kodlarını değiştirmeden dinamik özellik eklememizi sağlar.
-
 class ProductDecorator(Product):
-
     def __init__(self, wrapped_product: Product):
         self._product = wrapped_product
         super().__init__(wrapped_product.name, wrapped_product.price)
@@ -47,31 +43,82 @@ class WarrantyDecorator(ProductDecorator):
     def price(self):
         return self._product.price + 100.0
 
-# 3. ADAPTER ÖRÜNTÜSÜ (Faz 2 - Yeni)
-# Dış sistemleri (Banka API vb.) kendi sistemimize uyumlu hale getirir.
+# 2. STRATEGY PATTERN (Faz 3 - Yeni)
+# İndirim mantığını sepetten ayırarak OCP sağlar.
 
-# Varsayılan dış kütüphane (Değiştiremediğimiz kod)
-class ExternalBankAPI:
-    def make_payment(self, amount_in_cents: int):
-        # Bu API kuruş cinsinden tam sayı bekliyor
-        print(f"Banka API: {amount_in_cents / 100} TL ödeme başarıyla alındı.")
-
-# Bizim sistemimizin beklediği arayüz
-class PaymentProcessor(ABC):
+class DiscountStrategy(ABC):
     @abstractmethod
-    def process_payment(self, amount: float):
+    def apply_discount(self, total: float) -> float:
         pass
 
-class BankPaymentAdapter(PaymentProcessor):
-    def __init__(self, api: ExternalBankAPI):
-        self.api = api
+class PercentageDiscount(DiscountStrategy):
+    def __init__(self, percent: float):
+        self.percent = percent
+    def apply_discount(self, total: float) -> float:
+        return total * (1 - self.percent / 100)
 
-    def process_payment(self, amount: float):
-        # TL'yi kuruşa çevirip dış API'ye gönderiyoruz
-        cents = int(amount * 100)
-        self.api.make_payment(cents)
+class FixedAmountDiscount(DiscountStrategy):
+    def __init__(self, amount: float):
+        self.amount = amount
+    def apply_discount(self, total: float) -> float:
+        return max(0, total - self.amount)
 
-# 4. YARATIM VE YÖNETİM (Geliştirilmiş)
+class NoDiscount(DiscountStrategy):
+    def apply_discount(self, total: float) -> float:
+        return total
+
+# 3. OBSERVER PATTERN (Faz 3 - Yeni)
+# Sepete ürün eklendiğinde diğer sistemleri haberdar eder.
+
+class Observer(ABC):
+    @abstractmethod
+    def update(self, product: Product):
+        pass
+
+class StockManager(Observer):
+    def update(self, product: Product):
+        print(f">>> [STOK BİLGİSİ]: {product.name} için stok çıkışı hazırlandı.")
+
+class MarketingSystem(Observer):
+    def update(self, product: Product):
+        print(f">>> [PAZARLAMA]: Müşteri {product.name} ile ilgileniyor, benzer ürünleri öner!")
+
+# 4. GÜNCELLENMİŞ CART VE DİĞERLERİ
+class Cart:
+    def __init__(self):
+        self.items = []
+        self._observers = []
+        self._discount_strategy = NoDiscount()
+
+    def attach(self, observer: Observer):
+        self._observers.append(observer)
+
+    def set_discount_strategy(self, strategy: DiscountStrategy):
+        # OCP: Yeni indirim türü eklemek için bu sınıfı değiştirmemize gerek yok!
+        self._discount_strategy = strategy
+
+    def add_item(self, product: Product):
+        self.items.append(product)
+        # Observer'ları bilgilendir
+        for observer in self._observers:
+            observer.update(product)
+
+    def calculate_total(self) -> float:
+        total = sum(item.price for item in self.items)
+        # Stratejiyi uygula
+        return self._discount_strategy.apply_discount(total)
+
+    def print_receipt(self):
+        print("\n" + "="*50)
+        print(" FAZ 3: DAVRANIŞSAL ÖRÜNTÜLER VE FINAL SEPETİ ")
+        print("="*50)
+        for item in self.items:
+            print(f"{item.get_details():<38} | {item.price:>7} TL")
+        print("-" * 50)
+        print(f"İndirimsiz Toplam: {sum(i.price for i in self.items):>27} TL")
+        print(f"ÖDENECEK TUTAR: {self.calculate_total():>29} TL")
+        print("="*50)
+
 class ProductFactory:
     @staticmethod
     def create_product(category: str, name: str, price: float) -> Product:
@@ -80,53 +127,40 @@ class ProductFactory:
             return Electronics(name, price)
         elif category == "Food":
             return Food(name, price)
-        raise ValueError("Geçersiz kategori!")
+        return Electronics(name, price) # Default
 
-class Cart:
-    def __init__(self):
-        self.items = []
-        self.discount_code = None
+class ExternalBankAPI:
+    def make_payment(self, amount_in_cents: int):
+        print(f"Banka API: {amount_in_cents / 100} TL ödeme onaylandı.")
 
-    def add_item(self, product: Product):
-        self.items.append(product)
-
-    def calculate_total(self) -> float:
-        total = sum(item.price for item in self.items)
-        if self.discount_code == "YILBASI":
-            total *= 0.80
-        return max(0, total)
-
-    def print_receipt(self):
-        print("\n" + "="*45)
-        print(" FAZ 2: STRUCTURAL PATTERNS SEPETİ ")
-        print("="*45)
-        for item in self.items:
-            print(f"{item.get_details():<35} | {item.price:>7} TL")
-        print("-" * 45)
-        print(f"TOPLAM: {self.calculate_total():>32} TL")
-        print("="*45)
-
+class BankPaymentAdapter:
+    def __init__(self, api: ExternalBankAPI):
+        self.api = api
+    def process_payment(self, amount: float):
+        self.api.make_payment(int(amount * 100))
 
 if __name__ == "__main__":
-    # 1. Ürünü Factory ile oluştur
-    laptop = ProductFactory.create_product("Electronics", "Gaming Laptop", 25000)
-    
-    # 2. Ürünü Decorator'lar ile süsle (Dinamik özellik ekleme)
-    # Laptop + Garanti + Hediye Paketi
-    decorated_laptop = WarrantyDecorator(laptop)
-    decorated_laptop = GiftWrapDecorator(decorated_laptop)
-    
-    # 3. Sepete ekle ve yazdır
+    # 1. Sistemi Hazırla
     sepet = Cart()
-    sepet.add_item(decorated_laptop)
-    sepet.add_item(ProductFactory.create_product("Food", "Çikolata", 20))
-    
-    sepet.print_receipt()
+    sepet.attach(StockManager())
+    sepet.attach(MarketingSystem())
 
-    # 4. Adapter kullanarak dış banka sistemiyle ödeme yap
-    banka_servisi = ExternalBankAPI()
-    ödeme_aracı = BankPaymentAdapter(banka_servisi)
+    # 2. Ürünleri Oluştur ve Süsle
+    telefon = ProductFactory.create_product("Electronics", "iPhone 15", 50000)
+    garantili_telefon = WarrantyDecorator(telefon)
     
-    toplam = sepet.calculate_total()
-    print(f"\nÖdeme işlemi başlatılıyor: {toplam} TL")
-    ödeme_aracı.process_payment(toplam)
+    # 3. Sepete Ekle (Observer'lar burada tetiklenecek)
+    print("--- Ürünler Ekleniyor ---")
+    sepet.add_item(garantili_telefon)
+    sepet.add_item(ProductFactory.create_product("Food", "Kahve", 150))
+
+    # 4. İndirim Stratejisini Belirle (OCP Gösterimi)
+    # İstediğimiz stratejiyi Cart koduna dokunmadan seçebiliriz.
+    sepet.set_discount_strategy(PercentageDiscount(10)) # %10 İndirim
+    
+    # 5. Çıktı ve Ödeme
+    sepet.print_receipt()
+    
+    banka_api = ExternalBankAPI()
+    ödeme = BankPaymentAdapter(banka_api)
+    ödeme.process_payment(sepet.calculate_total())
