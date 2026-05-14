@@ -6,6 +6,7 @@ Neden Kullanıldı: Faz 0'da sepet sınıfı (Cart), hangi ürünün nasıl yara
   OCP Desteği: Yeni bir ürün kategorisi eklemek için sepetin kodunu değiştirmeye gerek kalmadı; sadece fabrikaya yeni bir seçenek eklemek yeterli.  
   Single Responsibility: Sepet sadece ürünleri listelemeye, fabrika ise sadece ürünleri üretmeye odaklandı.
 FAZ 0
+```mermaid
 classDiagram
     class ProductFactory {
         +static create_product(category)
@@ -14,8 +15,10 @@ classDiagram
     ProductFactory --> Product : creates
     Product <|-- Electronics
     Product <|-- Food
+```
    
 FAZ 1
+```mermaid
    classDiagram
     class ProductFactory {
         +create_product(category, name, price) Product$
@@ -41,4 +44,4 @@ FAZ 1
     Product <|-- Food
 
     note for ProductFactory "Nesne yaratma sorumluluğu\nburada merkezileştirilmiştir."
-   
+   ```
