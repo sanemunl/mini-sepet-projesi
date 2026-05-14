@@ -56,7 +56,7 @@ Ne Kazandım:Esneklik sağlandı; bir ürün hem garantili hem hediye paketli ol
 Nerede Kullanıldı: BankPaymentAdapter sınıfında.
 Neden Kullanıldı: Kuruş bazlı çalışan dış bir banka kütüphanesini, TL bazlı çalışan sepetimize bağlamak için.
 Ne Kazandım: Dış sisteme dokunmadan entegrasyon sağlandı.
-FAZ 3:
+FAZ 2:
 ```mermaid
 classDiagram
     class Product {
