@@ -55,7 +55,60 @@ Ne Kazandım:Esneklik sağlandı; bir ürün hem garantili hem hediye paketli ol
 Nerede Kullanıldı: BankPaymentAdapter sınıfında.
 Neden Kullanıldı: Kuruş bazlı çalışan dış bir banka kütüphanesini, TL bazlı çalışan sepetimize bağlamak için.
 Ne Kazandım: Dış sisteme dokunmadan entegrasyon sağlandı.
-![Faz 2 UML](docs/diagrams/faz2.drawio.png)
+FAZ 2:
+```mermaid
+classDiagram
+    class Product {
+        <<abstract>>
+        +name: str
+        +price: float
+        +get_details()*
+    }
+
+    class ProductDecorator {
+        <<abstract>>
+        -wrapped_product: Product
+        +price: float
+    }
+
+    class WarrantyDecorator {
+        +price: float
+    }
+
+    class GiftWrapDecorator {
+        +price: float
+    }
+
+    class PaymentProcessor {
+        <<interface>>
+        +process_payment(amount)*
+    }
+
+    class BankPaymentAdapter {
+        -api: ExternalBankAPI
+        +process_payment(amount)
+    }
+
+    class ExternalBankAPI {
+        +make_payment(cents: int)
+    }
+
+    %% Kalıtım ve Sarmalama (Decorator)
+    Product <|-- Electronics
+    Product <|-- Food
+    Product <|-- ProductDecorator
+    ProductDecorator <|-- WarrantyDecorator
+    ProductDecorator <|-- GiftWrapDecorator
+    ProductDecorator o-- Product : "wraps"
+
+    %% Adaptasyon (Adapter)
+    PaymentProcessor <|-- BankPaymentAdapter
+    BankPaymentAdapter --> ExternalBankAPI : "adapts"
+
+    note for ProductDecorator "Çalışma anında dinamik\nözellik ekleme yapısı"
+    note for BankPaymentAdapter "TL formatını Banka API'si için\nKuruş formatına dönüştürür"
+```
+
 
 
 Faz 3:
