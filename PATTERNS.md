@@ -17,3 +17,17 @@ Ne Kazandım:Esneklik sağlandı; bir ürün hem garantili hem hediye paketli ol
 Nerede Kullanıldı: BankPaymentAdapter sınıfında.
 Neden Kullanıldı: Kuruş bazlı çalışan dış bir banka kütüphanesini, TL bazlı çalışan sepetimize bağlamak için.
 Ne Kazandım: Dış sisteme dokunmadan entegrasyon sağlandı.
+![Faz 2 UML](docs/diagrams/faz2.drawio.png)
+
+
+Faz 3:
+4. Strategy (Faz 3)
+Nerede Kullanıldı: DiscountStrategy arayüzü ve buna bağlı PercentageDiscount, NoDiscount sınıflarında.
+Neden Kullanıldı: Sepet içindeki karmaşık if-else indirim mantığını temizlemek ve Açık/Kapalı Prensibi'ni (OCP) uygulamak için.
+Ne Kazandım: Yeni bir indirim türü eklemek için sepetin ana koduna dokunmaya gerek kalmadı; sistem yeni özelliklere "açık", değişime "kapalı" hale geldi.
+5. Observer (Faz 3)
+Nerede Kullanıldı: Observer soyut sınıfı ile StockManager ve MarketingSystem sınıflarında.
+Neden Kullanıldı: Sepete ürün eklendiğinde, sepetin diğer sistemlerle (stok, pazarlama) sıkı bağ kurmadan onları haberdar etmesini sağlamak için.
+Ne Kazandım: Sistemler arası bağımlılık (coupling) azaldı. Sepet sınıfı, hangi sistemin onu dinlediğini bilmek zorunda kalmadan bildirim yapabilir hale geldi.
+![Faz 3 UML](docs/diagrams/faz3.drawio.png)
+
