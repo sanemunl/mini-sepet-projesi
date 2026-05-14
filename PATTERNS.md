@@ -45,3 +45,80 @@ FAZ 1
 
     note for ProductFactory "Nesne yaratma sorumluluğu\nburada merkezileştirilmiştir."
    ```
+
+Faz 2:
+2. Decorator (Faz 2)
+Nerede Kullanıldı: GiftWrapDecorator ve WarrantyDecorator sınıflarında.
+Neden Kullanıldı: Ürün sınıflarını (Electronics vb.) kalıtımla şişirmek yerine, çalışma anında (runtime) dinamik özellik eklemek için.
+Ne Kazandım:Esneklik sağlandı; bir ürün hem garantili hem hediye paketli olabiliyor.
+3. Adapter (Faz 2)
+Nerede Kullanıldı: BankPaymentAdapter sınıfında.
+Neden Kullanıldı: Kuruş bazlı çalışan dış bir banka kütüphanesini, TL bazlı çalışan sepetimize bağlamak için.
+Ne Kazandım: Dış sisteme dokunmadan entegrasyon sağlandı.
+FAZ 2:
+```mermaid
+classDiagram
+    class Product {
+        <<abstract>>
+        +name: str
+        +price: float
+        +get_details()*
+    }
+
+    class ProductDecorator {
+        <<abstract>>
+        -wrapped_product: Product
+        +price: float
+    }
+
+    class WarrantyDecorator {
+        +price: float
+    }
+
+    class GiftWrapDecorator {
+        +price: float
+    }
+
+    class PaymentProcessor {
+        <<interface>>
+        +process_payment(amount)*
+    }
+
+    class BankPaymentAdapter {
+        -api: ExternalBankAPI
+        +process_payment(amount)
+    }
+
+    class ExternalBankAPI {
+        +make_payment(cents: int)
+    }
+
+    %% Kalıtım ve Sarmalama (Decorator)
+    Product <|-- Electronics
+    Product <|-- Food
+    Product <|-- ProductDecorator
+    ProductDecorator <|-- WarrantyDecorator
+    ProductDecorator <|-- GiftWrapDecorator
+    ProductDecorator o-- Product : "wraps"
+
+    %% Adaptasyon (Adapter)
+    PaymentProcessor <|-- BankPaymentAdapter
+    BankPaymentAdapter --> ExternalBankAPI : "adapts"
+
+    note for ProductDecorator "Çalışma anında dinamik\nözellik ekleme yapısı"
+    note for BankPaymentAdapter "TL formatını Banka API'si için\nKuruş formatına dönüştürür"
+```
+
+
+
+Faz 3:
+4. Strategy (Faz 3)
+Nerede Kullanıldı: DiscountStrategy arayüzü ve buna bağlı PercentageDiscount, NoDiscount sınıflarında.
+Neden Kullanıldı: Sepet içindeki karmaşık if-else indirim mantığını temizlemek ve Açık/Kapalı Prensibi'ni (OCP) uygulamak için.
+Ne Kazandım: Yeni bir indirim türü eklemek için sepetin ana koduna dokunmaya gerek kalmadı; sistem yeni özelliklere "açık", değişime "kapalı" hale geldi.
+5. Observer (Faz 3)
+Nerede Kullanıldı: Observer soyut sınıfı ile StockManager ve MarketingSystem sınıflarında.
+Neden Kullanıldı: Sepete ürün eklendiğinde, sepetin diğer sistemlerle (stok, pazarlama) sıkı bağ kurmadan onları haberdar etmesini sağlamak için.
+Ne Kazandım: Sistemler arası bağımlılık (coupling) azaldı. Sepet sınıfı, hangi sistemin onu dinlediğini bilmek zorunda kalmadan bildirim yapabilir hale geldi.
+![Faz 3 UML](docs/diagrams/faz3.drawio.png)
+
