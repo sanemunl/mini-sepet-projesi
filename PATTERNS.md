@@ -14,6 +14,7 @@ classDiagram
     ProductFactory --> Product : creates
     Product <|-- Electronics
     Product <|-- Food
+   
 FAZ 1
    classDiagram
     class ProductFactory {
