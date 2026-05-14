@@ -7,3 +7,13 @@ Neden Kullanıldı: Faz 0'da sepet sınıfı (Cart), hangi ürünün nasıl yara
   Single Responsibility: Sepet sadece ürünleri listelemeye, fabrika ise sadece ürünleri üretmeye odaklandı.
 ![Faz 0 UML](docs/diagrams/faz0.drawio.png)
 ![Faz 1 UML](docs/diagrams/faz1.drawio.png)
+
+Faz 2:
+2. Decorator (Faz 2)
+Nerede Kullanıldı: GiftWrapDecorator ve WarrantyDecorator sınıflarında.
+Neden Kullanıldı: Ürün sınıflarını (Electronics vb.) kalıtımla şişirmek yerine, çalışma anında (runtime) dinamik özellik eklemek için.
+Ne Kazandım:Esneklik sağlandı; bir ürün hem garantili hem hediye paketli olabiliyor.
+3. Adapter (Faz 2)
+Nerede Kullanıldı: BankPaymentAdapter sınıfında.
+Neden Kullanıldı: Kuruş bazlı çalışan dış bir banka kütüphanesini, TL bazlı çalışan sepetimize bağlamak için.
+Ne Kazandım: Dış sisteme dokunmadan entegrasyon sağlandı.

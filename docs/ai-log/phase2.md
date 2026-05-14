@@ -1,0 +1,3 @@
+Soru (Prompt):Faz 2 için yapısal (structural) örüntüleri projeme nasıl entegre edebilirim? Decorator ve Adapter kullanımı e-ticaret sepetine ne katar?"
+AI Yanıtı (Özet): AI, ürünlere ek özellik (garanti, hediye paketi) eklemek için Decorator, farklı formatta veri bekleyen banka sistemleri için Adapter önerdi.
+Uygulama Farkı:: Önerilen yapıyı uyguladım. Özellikle ExternalBankAPI'nin kuruş bazlı çalışması nedeniyle Adapter içinde TL-Kuruş dönüşümü yaparak sistemi esnek hale getirdim.
